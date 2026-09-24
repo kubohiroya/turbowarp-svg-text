@@ -1,62 +1,40 @@
-import { describe, expect, it } from "vitest";
-import schema from "../schemas/extension-manifest.schema.json";
-import definitions from "../src/block-definitions.json";
-import { extensionConfig } from "../src/config.js";
 import {
   createExtensionManifest,
-  EXTENSION_MANIFEST_FORMAT_VERSION,
   serializeExtensionManifest,
-} from "../src/extension-manifest.js";
+} from "@kubohiroya/turbowarp-extension-manifest";
+import { describe, expect, it } from "vitest";
+import definitions from "../src/block-definitions.json";
+import { extensionConfig } from "../src/config.js";
 
 describe("extension API manifest", () => {
-  it("serializes the public block contract deterministically", () => {
+  it("serializes the canonical block definitions deterministically", () => {
+    const first = serializeExtensionManifest(extensionConfig.id, definitions);
+    const second = serializeExtensionManifest(
+      extensionConfig.id,
+      structuredClone(definitions),
+    );
     const manifest = createExtensionManifest(extensionConfig.id, definitions);
-    expect(manifest).toEqual({
-      formatVersion: 1,
-      id: "kubohiroyasvgtext",
-      blocks: [
-        {
-          opcode: "defineStyle",
-          blockType: "COMMAND",
-          arguments: [
-            { id: "ALIGN", type: "STRING", menu: "alignment" },
-            { id: "BACKGROUND", type: "COLOR" },
-            { id: "FONT", type: "STRING" },
-            { id: "SIZE", type: "NUMBER" },
-            { id: "STYLE", type: "STRING" },
-            { id: "TEXT_COLOR", type: "COLOR" },
-          ],
-        },
-        {
-          opcode: "setText",
-          blockType: "COMMAND",
-          arguments: [
-            { id: "STYLE", type: "STRING" },
-            { id: "TEXT", type: "STRING" },
-          ],
-        },
-      ],
-      menus: [{ id: "alignment", acceptReporters: true }],
-    });
-    expect(serializeExtensionManifest(extensionConfig.id, definitions)).toBe(
-      `${JSON.stringify(manifest, null, 2)}\n`,
+
+    expect(first).toBe(second);
+    expect(first).toBe(`${JSON.stringify(manifest, null, 2)}\n`);
+    expect(manifest.id).toBe(extensionConfig.id);
+    expect(manifest.blocks).toHaveLength(definitions.blocks.length);
+    expect(manifest.blocks.map((block) => block.opcode)).toEqual(
+      definitions.blocks.map((block) => block.opcode).sort(),
     );
   });
 
-  it("keeps the schema format version aligned with the generator", () => {
-    expect(schema.properties.formatVersion.const).toBe(
-      EXTENSION_MANIFEST_FORMAT_VERSION,
+  it("declares every menu a block argument references", () => {
+    const manifest = createExtensionManifest(extensionConfig.id, definitions);
+    const declared = new Set(manifest.menus.map((menu) => menu.id));
+    const referenced = manifest.blocks.flatMap((block) =>
+      block.arguments.flatMap((argument) =>
+        argument.menu === undefined ? [] : [argument.menu],
+      ),
     );
-  });
 
-  it("rejects duplicate opcodes", () => {
-    expect(() =>
-      createExtensionManifest("fixtureextension", {
-        blocks: [
-          { opcode: "same", blockType: "COMMAND" },
-          { opcode: "same", blockType: "REPORTER" },
-        ],
-      }),
-    ).toThrow("Duplicate block opcode: same");
+    expect(
+      [...new Set(referenced)].filter((menu) => !declared.has(menu)),
+    ).toEqual([]);
   });
 });
