@@ -12,4 +12,6 @@ minimumReleaseAgeExclude:
   - "@typescript-eslint/utils@8.66.0"
   - "@typescript-eslint/visitor-keys@8.66.0"
   - typescript-eslint@8.66.0
-  - "@kubohiroya/vite-plugin-turbowarp-extension@0.4.0"
+  - "@kubohiroya/turbowarp-extension-data-editor@0.2.1"
+  - "@kubohiroya/turbowarp-extension-manifest@0.3.2"
+  - "@kubohiroya/vite-plugin-turbowarp-extension@0.6.1"

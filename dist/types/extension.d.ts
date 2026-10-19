@@ -40,6 +40,7 @@ export declare class SvgTextExtension implements TurboWarpExtension {
     private readonly styles;
     private readonly textActors;
     private layoutCapabilityValue?;
+    private fixedEditorsDispose;
     constructor(runtime?: any, options?: SvgTextExtensionOptions);
     getInfo(): Record<string, unknown>;
     defineStyle(args: DefineStyleArguments): void;

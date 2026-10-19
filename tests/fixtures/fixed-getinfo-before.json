@@ -1,0 +1,64 @@
+{
+  "id": "kubohiroyasvgtext",
+  "name": "SVG Text",
+  "docsURI": "https://kubohiroya.github.io/turbowarp-svg-text/",
+  "blockIconURI": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M13%2023V12h11M40%2012h11v11M13%2041v11h11M40%2052h11V41M22%2023h20M32%2023v23%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
+  "color1": "#9966ff",
+  "blocks": [
+    {
+      "opcode": "defineStyle",
+      "blockType": "command",
+      "text": "define text style [STYLE] background [BACKGROUND] text [TEXT_COLOR] font [FONT] size [SIZE] align [ALIGN]",
+      "hideFromPalette": false,
+      "arguments": {
+        "STYLE": {
+          "type": "string",
+          "defaultValue": "default"
+        },
+        "BACKGROUND": {
+          "type": "color",
+          "defaultValue": "#ffffff"
+        },
+        "TEXT_COLOR": {
+          "type": "color",
+          "defaultValue": "#575e75"
+        },
+        "FONT": {
+          "type": "string",
+          "defaultValue": "Helvetica"
+        },
+        "SIZE": {
+          "type": "number",
+          "defaultValue": 100
+        },
+        "ALIGN": {
+          "type": "string",
+          "defaultValue": "left",
+          "menu": "alignment"
+        }
+      }
+    },
+    {
+      "opcode": "setText",
+      "blockType": "command",
+      "text": "set this sprite text [TEXT] with style [STYLE]",
+      "hideFromPalette": false,
+      "arguments": {
+        "TEXT": {
+          "type": "string",
+          "defaultValue": "Title\\nSubtitle"
+        },
+        "STYLE": {
+          "type": "string",
+          "defaultValue": "default"
+        }
+      }
+    }
+  ],
+  "menus": {
+    "alignment": {
+      "acceptReporters": true,
+      "items": ["left", "center", "right"]
+    }
+  }
+}

@@ -40,9 +40,9 @@
       <section>
         <h2>インストール</h2>
         <p>Composition APIはversionを固定してインストールします。</p>
-        <pre><code>pnpm add --save-exact @kubohiroya/turbowarp-svg-text@0.10.0</code></pre>
+        <pre><code>pnpm add --save-exact @kubohiroya/turbowarp-svg-text@0.10.1</code></pre>
         <p>単体のTurboWarp拡張はjsDelivrからも読み込めます。</p>
-        <pre><code>https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-svg-text@0.10.0/dist/svg-text.js</code></pre>
+        <pre><code>https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-svg-text@0.10.1/dist/svg-text.js</code></pre>
       </section>
 
       <section>
@@ -243,5 +243,212 @@ const layout = textLayouts.layoutText({
         <p>MPL-2.0で提供します。</p>
       </footer>
     </main>
+    <!-- BEGIN COMPLETE BLOCK REFERENCE -->
+    <section
+      lang="en"
+      id="extension-block-reference"
+      aria-labelledby="block-reference-title"
+    >
+      <h2 id="block-reference-title">SVG Text: complete block reference</h2>
+      <p>
+        All 2 blocks are documented below, including compatibility blocks and
+        blocks available through optional features. Select a block to read its
+        behavior, arguments, default values, and menu choices. Each block has a
+        permanent link.
+      </p>
+      <nav aria-label="Block reference">
+        <ul>
+          <li>
+            <a href="#block-defineStyle"
+              ><code
+                >define text style [STYLE] background [BACKGROUND] text
+                [TEXT_COLOR] font [FONT] size [SIZE] align [ALIGN]</code
+              ></a
+            >
+          </li>
+          <li>
+            <a href="#block-setText"
+              ><code>set this sprite text [TEXT] with style [STYLE]</code></a
+            >
+          </li>
+        </ul>
+      </nav>
+      <article id="block-defineStyle" class="block-reference-entry">
+        <p>
+          <a href="#fixed-input-editing">Fixed input editor / 固定入力の編集</a>
+        </p>
+        <h3>
+          <code
+            >define text style [STYLE] background [BACKGROUND] text [TEXT_COLOR]
+            font [FONT] size [SIZE] align [ALIGN]</code
+          >
+        </h3>
+        <p>
+          Defines or replaces a named text style for SVG text actors. Bubble
+          shape and placement are owned by the host Bubble layer.
+        </p>
+        <p>
+          Block type: COMMAND. Opcode: <code>defineStyle</code>.
+          <a href="#block-defineStyle">Permanent link</a>
+        </p>
+        <div class="block-reference-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Argument</th>
+                <th>Type</th>
+                <th>Default value</th>
+                <th>Menu choices</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row"><code>STYLE</code></th>
+                <td>STRING</td>
+                <td><code>default</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <th scope="row"><code>BACKGROUND</code></th>
+                <td>COLOR</td>
+                <td><code>#ffffff</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <th scope="row"><code>TEXT_COLOR</code></th>
+                <td>COLOR</td>
+                <td><code>#575e75</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <th scope="row"><code>FONT</code></th>
+                <td>STRING</td>
+                <td><code>Helvetica</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <th scope="row"><code>SIZE</code></th>
+                <td>NUMBER</td>
+                <td><code>100</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <th scope="row"><code>ALIGN</code></th>
+                <td>STRING</td>
+                <td><code>left</code></td>
+                <td>
+                  <ul>
+                    <li><code>left</code></li>
+                    <li><code>center</code></li>
+                    <li><code>right</code></li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+      <article id="block-setText" class="block-reference-entry">
+        <h3><code>set this sprite text [TEXT] with style [STYLE]</code></h3>
+        <p>Replaces this sprite&#x27;s skin with responsive styled SVG text.</p>
+        <p>
+          Block type: COMMAND. Opcode: <code>setText</code>.
+          <a href="#block-setText">Permanent link</a>
+        </p>
+        <div class="block-reference-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Argument</th>
+                <th>Type</th>
+                <th>Default value</th>
+                <th>Menu choices</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row"><code>TEXT</code></th>
+                <td>STRING</td>
+                <td><code>Title\nSubtitle</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <th scope="row"><code>STYLE</code></th>
+                <td>STRING</td>
+                <td><code>default</code></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+      <p>
+        <a
+          href="https://github.com/kubohiroya/turbowarp-svg-text/blob/main/README.md"
+          >Repository guide and examples</a
+        >
+      </p>
+    </section>
+    <!-- END COMPLETE BLOCK REFERENCE -->
+    <section id="fixed-input-editing">
+      <p>
+        新しく入力する短縮色#RGBは、実Blockly
+        block.setColourが6桁を要求するため、明示codecで同じ色の#RRGGBBへ展開します（例:
+        #AbC →
+        #AAbbCC）。文字の大小は保持し、6桁入力はそのまま保存します。旧3桁rawは未編集ならencodeせず、そのまま保持します。この変換はSVG
+        Textの新native色候補だけに適用し、Assetの文字列色やruntime受理領域は変更しません。
+      </p>
+      <p>
+        このSchemaはruntime全体の入力領域ではなく、標準native
+        fieldへ新しく書く候補の契約です。色はcommon hostの#3/#6
+        allowlistとowner妥当性の交差に限定します。既存runtimeの#4/#8・transparent・CSS色の受理は変更せず、旧rawは未編集なら保持します。setterが候補を変更する場合は全件を保存拒否し、自動正規化はしません。
+      </p>
+      <h2>固定入力の編集 / Fixed input editing</h2>
+      <p>
+        GUI起動時の
+        <code>blockEditorDialogs=1&amp;blockEditorFixedInputs=1</code>
+        が必要です（既定OFF）。標準literalだけを編集し、reporter・非対応fieldは評価せず保持します。旧GUIでは通常のブロック動作を維持します。
+      </p>
+      <p>
+        Static enum values are selected explicitly. New numeric edits must be
+        finite JSON number tokens; unfinished buffers cannot be saved. Unchanged
+        aliases, spaces and existing raw values are retained. Runtime style
+        names, assets and expressions are not evaluated or resolved by this
+        editor.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Block / 固定アンカー</th>
+            <th>Arguments / UI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">
+              <a href="#block-defineStyle"><code>defineStyle</code></a>
+            </th>
+            <td>
+              <code>BACKGROUND</code> (color), <code>TEXT_COLOR</code> (color),
+              <code>SIZE</code> (number), <code>ALIGN</code> (enum)
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        <code>defineStyle</code>
+        のBACKGROUND/TEXT_COLORは原文textと色picker、SIZEは数値buffer、ALIGNはenumです。変更した色は標準fieldで安全な#RGB/#RRGGBBを受理し、大文字小文字の原文は未変更なら保持します。SIZEは新入力を整数限定せず、finite値のruntime
+        clamp（1..1000）や既存blank/nonfiniteのdefault100処理は変更しません。FONT・STYLEと非対象値は保持します。
+      </p>
+      <p>
+        同じdialog内の保存失敗ではdraftを保持します。保存成功・取消・dispose・project/target/登録失効で未保存draftを破棄し、再openは現在のrawから開始します。変更しないraw・reporter・sb3形式に移行は不要です。数値の新入力はblank・hex・非有限値を拒否し、既存rawの開閉にこの新入力規則を遡及しません。
+      </p>
+      <p>
+        Schemaの正本は
+        <code>schemas/block-editor-fixed-inputs.schema.json</code> の
+        <code>$defs/&lt;opcode&gt;/properties/&lt;argument&gt;</code>
+        です。各bindingは正本fragmentを直接参照し、生成Schemaを別の正本として扱いません。local実装の検証を公開サイトのdeploy完了と同一視せず、公開後URL到達は配布工程で確認します。
+      </p>
+    </section>
   </body>
 </html>

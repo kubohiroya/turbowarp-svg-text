@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://kubohiroya.github.io/turbowarp-svg-text/schemas/block-editor-fixed-inputs.schema.json",
+  "title": "turbowarp-svg-text fixed editing contracts",
+  "$defs": {
+    "defineStyle": {
+      "type": "object",
+      "properties": {
+        "BACKGROUND": {
+          "type": "string",
+          "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+          "description": "New native colour_picker candidate only. Common host commit485f0e550e622235624b5e9176820161aeeba252 src/turbowarp/fixed-fields.js restricts new candidates to 3/6-digit hex; the existing runtime also accepts #4/#8, transparent and CSS colours."
+        },
+        "TEXT_COLOR": {
+          "type": "string",
+          "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+          "description": "New native colour_picker candidate only. Common host commit485f0e550e622235624b5e9176820161aeeba252 src/turbowarp/fixed-fields.js restricts new candidates to 3/6-digit hex; the existing runtime also accepts #4/#8, transparent and CSS colours."
+        },
+        "SIZE": {
+          "type": "number"
+        },
+        "ALIGN": {
+          "type": "string",
+          "enum": ["left", "center", "right"]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Fixed editing contract for changed standard native fields, not the complete runtime input domain. Colour candidates intersect the common host #RGB/#RRGGBB allowlist with owner validity; existing broader colour raw values are retained unchanged."
+}
