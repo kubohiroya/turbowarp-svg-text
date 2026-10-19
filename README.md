@@ -238,3 +238,9 @@ pnpm run check
 The version in `package.json` is the release source of truth. The consistency check keeps the exact-version README and Pages examples aligned and rejects a release tag that does not match it.
 
 SPDX-License-Identifier: MPL-2.0
+
+## Fixed input editing
+
+The optional GUI capability is enabled only by the startup flags `blockEditorDialogs=1&blockEditorFixedInputs=1` (default OFF). See the [block reference and editing rules](docs/index.html#fixed-input-editing). Canonical property Schemas live in `schemas/block-editor-fixed-inputs.schema.json`; unchanged raw values and reporter inputs are retained. The common editor is a development/type dependency pinned to commit `485f0e550e622235624b5e9176820161aeeba252`; no common runtime import is added to the extension or composition API.
+
+Run `BLOCK_EDITOR_GUI_ROOT=/absolute/path/to/scratch-gui pnpm test:fixed-inputs:native` after building for the explicit native Blockly/VM transaction checks. This command requires the real GUI vendor dependencies and fails rather than skips if they are unavailable. It is separate from `pnpm test` and from published Pages verification.

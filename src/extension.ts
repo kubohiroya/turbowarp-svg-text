@@ -1,4 +1,5 @@
 import definitions from "./block-definitions.json";
+import { registerFixedInputEditors } from "./fixed-input-editors.js";
 import { extensionConfig } from "./config.js";
 import {
   createSvgTextLayout,
@@ -125,6 +126,7 @@ export class SvgTextExtension implements TurboWarpExtension {
   >([[defaultStyleName, DEFAULT_SVG_TEXT_RICH_STYLE]]);
   private readonly textActors = new Map<TurboWarpTarget, TextActorState>();
   private layoutCapabilityValue?: SvgTextLayoutCapability;
+  private fixedEditorsDispose: (() => void) | undefined;
 
   public constructor(
     runtime = Scratch.vm?.runtime,
@@ -141,6 +143,10 @@ export class SvgTextExtension implements TurboWarpExtension {
   }
 
   public getInfo(): Record<string, unknown> {
+    this.fixedEditorsDispose ??= registerFixedInputEditors(
+      Scratch,
+      this.runtime,
+    );
     return {
       id: extensionConfig.id,
       name: Scratch.translate(definitions.extensionName),

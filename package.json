@@ -26,7 +26,8 @@
     "dist/",
     "CHANGELOG.md",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "schemas/"
   ],
   "main": "./dist/svg-text.js",
   "unpkg": "./dist/svg-text.js",
@@ -59,10 +60,12 @@
     "release:check": "pnpm publish --dry-run --access public --no-git-checks",
     "repo:check": "node scripts/check-repo.ts",
     "check": "pnpm run typecheck && pnpm run lint && pnpm run format && pnpm run test && pnpm run docs:site:check && pnpm run release:consistency:check && pnpm run check:dist && pnpm run composition:dist:check && pnpm run types:composition:check && pnpm run repo:check && pnpm run pack:check",
-    "prepack": "pnpm run check"
+    "prepack": "pnpm run check",
+    "test:fixed-inputs:native": "node --test tests/fixed-inputs.native.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@kubohiroya/turbowarp-extension-data-editor": "github:kubohiroya/turbowarp-extension-data-editor#485f0e550e622235624b5e9176820161aeeba252",
     "@kubohiroya/turbowarp-extension-manifest": "0.2.0",
     "@kubohiroya/vite-plugin-turbowarp-extension": "0.4.0",
     "@types/node": "^26.1.2",

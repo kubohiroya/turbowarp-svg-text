@@ -57,6 +57,37 @@ var block_definitions_default = {
 		]
 	} }
 };
+var block_editor_fixed_inputs_schema_default = {
+	$schema: "http://json-schema.org/draft-07/schema#",
+	$id: "https://kubohiroya.github.io/turbowarp-svg-text/schemas/block-editor-fixed-inputs.schema.json",
+	title: "turbowarp-svg-text fixed editing contracts",
+	$defs: { "defineStyle": {
+		"type": "object",
+		"properties": {
+			"BACKGROUND": {
+				"type": "string",
+				"pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+				"description": "New native colour_picker candidate only. Common host commit485f0e550e622235624b5e9176820161aeeba252 src/turbowarp/fixed-fields.js restricts new candidates to 3/6-digit hex; the existing runtime also accepts #4/#8, transparent and CSS colours."
+			},
+			"TEXT_COLOR": {
+				"type": "string",
+				"pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+				"description": "New native colour_picker candidate only. Common host commit485f0e550e622235624b5e9176820161aeeba252 src/turbowarp/fixed-fields.js restricts new candidates to 3/6-digit hex; the existing runtime also accepts #4/#8, transparent and CSS colours."
+			},
+			"SIZE": { "type": "number" },
+			"ALIGN": {
+				"type": "string",
+				"enum": [
+					"left",
+					"center",
+					"right"
+				]
+			}
+		},
+		"additionalProperties": false
+	} },
+	description: "Fixed editing contract for changed standard native fields, not the complete runtime input domain. Colour candidates intersect the common host #RGB/#RRGGBB allowlist with owner validity; existing broader colour raw values are retained unchanged."
+};
 //#endregion
 //#region src/config.ts
 var extensionConfig = {
@@ -68,6 +99,166 @@ var extensionConfig = {
 	license: "MPL-2.0",
 	unsandboxed: true
 };
+//#endregion
+//#region src/fixed-input-editors.ts
+var contracts = block_editor_fixed_inputs_schema_default.$defs;
+var repository = "turbowarp-svg-text";
+var canonicalSource = {
+	repository,
+	path: "schemas/block-editor-fixed-inputs.schema.json"
+};
+var contractRevision = "fixed-inputs-v1";
+var numberToken = /^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$/u;
+/** New input only: never run this strict lexical policy over unmodified raw fields. */
+function fixedNumber(value) {
+	if (typeof value === "number" && Number.isFinite(value)) return value;
+	if (typeof value !== "string" || !numberToken.test(value.trim())) throw new TypeError("Invalid fixed number.");
+	const number = Number(value);
+	if (!Number.isFinite(number)) throw new TypeError("Invalid fixed number.");
+	return number;
+}
+function existingNumber(value) {
+	if (typeof value !== "string" && typeof value !== "number") throw new TypeError("Invalid numeric projection.");
+	if (typeof value === "string" && value.trim() === "") throw new TypeError("Unprojected existing numeric field.");
+	const number = Number(value);
+	if (!Number.isFinite(number)) throw new TypeError("Invalid numeric projection.");
+	return number;
+}
+function normalizeChoice(opcode, argument, value) {
+	return value.trim().toLowerCase();
+}
+function bundle(opcode, argument) {
+	const source = {
+		...canonicalSource,
+		symbol: `/$defs/${opcode}/properties/${argument}`
+	};
+	return {
+		identity: {
+			ownerId: repository,
+			contractId: `${opcode}.${argument}`,
+			revision: contractRevision,
+			variantId: "fixed"
+		},
+		dialect: "draft-07",
+		root: {
+			retrievalUri: `${block_editor_fixed_inputs_schema_default.$id}?binding=${opcode}.${argument}`,
+			document: contracts[opcode].properties[argument],
+			artifact: {
+				role: "canonical-schema",
+				source
+			}
+		},
+		resources: [],
+		provenance: {
+			canonicalSources: [
+				source,
+				{
+					repository,
+					path: "src/fixed-input-editors.ts",
+					symbol: "fixedInputEditorOptions"
+				},
+				{
+					repository: "turbowarp-extension-data-editor",
+					path: "src/turbowarp/fixed-fields.js",
+					version: "485f0e550e622235624b5e9176820161aeeba252",
+					symbol: "prepareFixedChange"
+				},
+				{
+					repository,
+					path: "src/block-definitions.json"
+				},
+				{
+					repository,
+					path: "src/extension.ts",
+					symbol: opcode
+				}
+			],
+			generatedFiles: [],
+			referenceSchemas: [],
+			generationSources: []
+		}
+	};
+}
+function fixedInputEditorOptions() {
+	return Object.entries(contracts).map(([opcode, contract]) => {
+		const bindings = Object.entries(contract.properties).map(([argument, schema]) => ({
+			argument,
+			schemaBundle: bundle(opcode, argument),
+			control: schema.enum ? {
+				kind: "enum",
+				choices: schema.enum.map((value) => ({
+					value,
+					label: value
+				}))
+			} : { kind: schema.type === "number" || schema.type === "integer" ? "number" : "color" },
+			read(value) {
+				if (schema.type === "number" || schema.type === "integer") return existingNumber(value);
+				if (typeof value !== "string") throw new TypeError("Invalid string projection.");
+				return schema.enum ? normalizeChoice(opcode, argument, value) : value;
+			},
+			encode(value) {
+				if (schema.type === "number" || schema.type === "integer") {
+					fixedNumber(value);
+					return typeof value === "number" ? Object.is(value, -0) ? "-0" : String(value) : value.trim();
+				}
+				if (typeof value !== "string") throw new TypeError("Invalid fixed string.");
+				if (schema.pattern && /^#[\da-f]{3}$/iu.test(value)) return `#${value[1]}${value[1]}${value[2]}${value[2]}${value[3]}${value[3]}`;
+				return value;
+			},
+			validateCandidate(candidate) {
+				let valid;
+				try {
+					if (schema.type === "number" || schema.type === "integer") {
+						const number = existingNumber(candidate);
+						valid = (schema.type !== "integer" || Number.isInteger(number)) && (schema.minimum === void 0 || number >= schema.minimum) && (schema.maximum === void 0 || number <= schema.maximum) && (schema.exclusiveMinimum === void 0 || number > schema.exclusiveMinimum);
+					} else valid = typeof candidate === "string" && (schema.enum ? schema.enum.includes(candidate) : new RegExp(schema.pattern, "u").test(candidate));
+				} catch {
+					valid = false;
+				}
+				return valid ? [] : [{
+					path: argument,
+					message: "Check this value before saving."
+				}];
+			}
+		}));
+		return {
+			apiVersion: 1,
+			extensionId: extensionConfig.id,
+			editorId: `${extensionConfig.id}.fixed.${opcode}`,
+			opcodes: [`${extensionConfig.id}_${opcode}`],
+			contractId: `${repository}.${opcode}.fixed`,
+			contractRevision,
+			bindings,
+			validationContext: () => ({
+				consumerId: repository,
+				nowMs: 0,
+				settings: null
+			})
+		};
+	});
+}
+/** Optional GUI capability; ordinary runtime/composition consumers do not load the editor. */
+function registerFixedInputEditors(scratch, runtime) {
+	const api = scratch.gui?.blockEditors;
+	if (api?.apiVersion !== 1 || typeof api.registerFixedInputEditor !== "function") return void 0;
+	const events = runtime;
+	const removers = [];
+	let active = true;
+	const dispose = () => {
+		if (!active) return;
+		active = false;
+		events.off?.("RUNTIME_DISPOSED", dispose);
+		for (const remove of removers.splice(0).reverse()) remove();
+	};
+	try {
+		for (const options of fixedInputEditorOptions()) removers.push(api.registerFixedInputEditor.call(api, options));
+		events.on?.("RUNTIME_DISPOSED", dispose);
+	} catch (error) {
+		dispose();
+		throw error;
+	}
+	return dispose;
+}
 //#endregion
 //#region src/text-layout.ts
 var baseStageWidth = 480;
@@ -421,6 +612,7 @@ var SvgTextExtension = class {
 		});
 	}
 	getInfo() {
+		this.fixedEditorsDispose ??= registerFixedInputEditors(Scratch, this.runtime);
 		return {
 			id: extensionConfig.id,
 			name: Scratch.translate(block_definitions_default.extensionName),

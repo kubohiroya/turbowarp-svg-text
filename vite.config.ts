@@ -18,5 +18,19 @@ export default defineConfig({
       id: extensionConfig.id,
       definitions,
     }),
+    {
+      name: "normalize-generated-indentation",
+      apply: "build",
+      enforce: "post",
+      generateBundle(_outputOptions, bundle) {
+        for (const output of Object.values(bundle)) {
+          if (output.type === "chunk") {
+            output.code = output.code.replace(/^[\t ]+/gmu, (indentation) =>
+              indentation.replace(/\t/gu, "  "),
+            );
+          }
+        }
+      },
+    },
   ],
 });
