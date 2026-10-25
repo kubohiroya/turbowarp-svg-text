@@ -513,5 +513,9 @@ const layout = textLayouts.layoutText({
         です。各bindingは正本fragmentを直接参照し、生成Schemaを別の正本として扱いません。local実装の検証を公開サイトのdeploy完了と同一視せず、公開後URL到達は配布工程で確認します。
       </p>
     </section>
+  <!-- The shared TurboWarp Plus header. It inserts itself at the top of the
+       page in a shadow root, so it cannot disturb the styles below. -->
+  <script type="module"
+          src="https://kubohiroya.github.io/turbowarp-plus-site-header/dist/auto.js"></script>
   </body>
 </html>
