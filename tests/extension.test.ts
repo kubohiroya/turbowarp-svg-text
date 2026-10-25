@@ -92,8 +92,8 @@ describe("SVG Text extension", () => {
     const iconSvg = decodeURIComponent(
       BLOCK_ICON_URI.slice("data:image/svg+xml,".length),
     );
-    expect(iconSvg).toContain('viewBox="0 0 64 64"');
-    expect(iconSvg).toContain("M22 23h20M32 23v23");
+    expect(iconSvg).toContain('viewBox="0 0 48 48"');
+    expect(iconSvg).toContain('<circle cx="31" cy="13" r="2.6"/>');
     expect(iconSvg).not.toContain("<rect");
   });
 

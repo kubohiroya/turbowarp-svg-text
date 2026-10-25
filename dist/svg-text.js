@@ -408,7 +408,7 @@
   var maximumRubyFontPercent = 100;
   var minimumRubyGap = 0;
   var maximumRubyGap = 100;
-  var BLOCK_ICON_URI = `data:image/svg+xml,${encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><g fill=\"none\" stroke=\"#fff\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M13 23V12h11M40 12h11v11M13 41v11h11M40 52h11V41M22 23h20M32 23v23\"/></g></svg>")}`;
+  var BLOCK_ICON_URI = `data:image/svg+xml,${encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><text x=\"21\" y=\"38\" font-family=\"system-ui, sans-serif\" font-size=\"30\" font-weight=\"700\" text-anchor=\"middle\" fill=\"#4C97FF\">A</text><g fill=\"#59C059\"><circle cx=\"31\" cy=\"13\" r=\"2.6\"/><circle cx=\"39\" cy=\"13\" r=\"2.6\"/></g></svg>")}`;
   var SvgTextExtension = class {
     constructor(runtime = Scratch.vm?.runtime, options = {}) {
       this.styles = /* @__PURE__ */ new Map([[defaultStyleName, DEFAULT_SVG_TEXT_RICH_STYLE]]);
