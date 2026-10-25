@@ -1,5 +1,7 @@
 # TurboWarp-SVG-Text
 
+<img src="assets/block-icon.svg" alt="" width="48" height="48">
+
 [English](README.md)
 
 TurboWarp-SVG-Textは、応答的な名前付きスタイル、host非依存のplain/rubyレイアウト、SVG text actorを

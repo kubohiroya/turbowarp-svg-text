@@ -2,7 +2,7 @@
   "id": "kubohiroyasvgtext",
   "name": "SVG Text",
   "docsURI": "https://kubohiroya.github.io/turbowarp-svg-text/",
-  "blockIconURI": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M13%2023V12h11M40%2012h11v11M13%2041v11h11M40%2052h11V41M22%2023h20M32%2023v23%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
+  "blockIconURI": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Ctext%20x%3D%2221%22%20y%3D%2238%22%20font-family%3D%22system-ui%2C%20sans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22%234C97FF%22%3EA%3C%2Ftext%3E%3Cg%20fill%3D%22%2359C059%22%3E%3Ccircle%20cx%3D%2231%22%20cy%3D%2213%22%20r%3D%222.6%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2213%22%20r%3D%222.6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
   "color1": "#9966ff",
   "blocks": [
     {
