@@ -2,7 +2,7 @@
 
 <img src="assets/block-icon.svg" alt="" width="48" height="48">
 
-[English](README.md)
+[English](README.md) | 日本語
 
 TurboWarp-SVG-Textは、応答的な名前付きスタイル、host非依存のplain/rubyレイアウト、SVG text actorを
 提供します。`turbowarp-bubble`のようなhost拡張機能に対するテキストproviderであり、Bubbleの形状、配置、

@@ -2,7 +2,7 @@
 
 <img src="assets/block-icon.svg" alt="" width="48" height="48">
 
-[日本語](README.ja.md)
+English | [日本語](README.ja.md)
 
 TurboWarp-SVG-Text provides responsive named styles, host-neutral plain/ruby layout, and SVG text actors. It is a text provider for host extensions such as `turbowarp-bubble`; Bubble shape, placement, portraits, and animation belong to the host.
 
