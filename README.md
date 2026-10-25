@@ -1,5 +1,7 @@
 # TurboWarp-SVG-Text
 
+[日本語](README.ja.md)
+
 TurboWarp-SVG-Text provides responsive named styles, host-neutral plain/ruby layout, and SVG text actors. It is a text provider for host extensions such as `turbowarp-bubble`; Bubble shape, placement, portraits, and animation belong to the host.
 
 ## Responsibilities
