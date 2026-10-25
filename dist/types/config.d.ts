@@ -6,4 +6,5 @@ export declare const extensionConfig: {
     readonly author: "Hiroya Kubo";
     readonly license: "MPL-2.0";
     readonly unsandboxed: true;
+    readonly blockIconURI: `data:image/svg+xml,${string}`;
 };
