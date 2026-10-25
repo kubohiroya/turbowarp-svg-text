@@ -65,9 +65,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@kubohiroya/turbowarp-extension-data-editor": "0.2.1",
-    "@kubohiroya/turbowarp-extension-manifest": "0.3.2",
-    "@kubohiroya/vite-plugin-turbowarp-extension": "0.6.1",
+    "@kubohiroya/turbowarp-extension-data-editor": "^0.2.1",
+    "@kubohiroya/turbowarp-extension-manifest": "^0.3.2",
+    "@kubohiroya/vite-plugin-turbowarp-extension": "^0.6.1",
     "@types/node": "^26.1.2",
     "eslint": "^10.8.0",
     "prettier": "^3.9.6",
