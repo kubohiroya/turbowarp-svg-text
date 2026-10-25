@@ -24,13 +24,13 @@ portrait、アニメーションはhost側の責務です。
 Composition APIはversionを固定して導入します。
 
 ```sh
-pnpm add --save-exact @kubohiroya/turbowarp-svg-text@0.10.1
+pnpm add --save-exact @kubohiroya/turbowarp-svg-text@0.11.0
 ```
 
 standaloneのTurboWarp拡張機能は、version固定のjsDelivr URLから利用できます。
 
 ```text
-https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-svg-text@0.10.1/dist/svg-text.js
+https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-svg-text@0.11.0/dist/svg-text.js
 ```
 
 ## ブロック
@@ -288,9 +288,8 @@ SPDX-License-Identifier: MPL-2.0
 任意のGUI capabilityは、起動時フラグ`blockEditorDialogs=1&blockEditorFixedInputs=1`でのみ有効に
 なります（既定OFF）。[blockの一覧と編集規則](docs/index.html#fixed-input-editing)を参照してください。
 正式なpropertyのSchemaは`schemas/block-editor-fixed-inputs.schema.json`にあり、未変更の生の値と
-reporter入力は保持されます。共通エディターは開発・型のための依存で、npmのrevision
-`@kubohiroya/turbowarp-extension-data-editor@0.2.1`（sourceの基点commit
-`485f0e550e622235624b5e9176820161aeeba252`）に固定しています。拡張機能やcomposition APIへ共通の
+reporter入力は保持されます。共通エディターは開発・型のための依存で、lockfileではnpm版
+`@kubohiroya/turbowarp-extension-data-editor@0.3.4`に固定しています。拡張機能やcomposition APIへ共通の
 実行時importを追加することはありません。
 
 明示的なnative Blockly/VMのトランザクション検査は、ビルド後に

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.0 - 2026-10-26
+
+- ビルド依存をplugin 0.8.0 / data-editor 0.3.4へ更新。
+- 既存の公開APIとフラグの既定値を維持。切り戻しは0.10.1へ固定。
+
 ## 0.10.1 - 2026-10-19
 
 - Publish the selected Git source with explicit base revision metadata and exact latest internal npm dependencies.
