@@ -234,6 +234,7 @@ The plain host-neutral contract is available from `0.6.0`, the typed ruby contra
 ## Development
 
 ```sh
+npm install --global corepack@latest
 corepack enable
 pnpm install --frozen-lockfile
 pnpm run check

@@ -273,6 +273,7 @@ capabilityの追加や修正を行います。標準の受け渡しを切り戻�
 ## 開発
 
 ```sh
+npm install --global corepack@latest
 corepack enable
 pnpm install --frozen-lockfile
 pnpm run check
