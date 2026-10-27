@@ -33,13 +33,13 @@ portrait、アニメーションはhost側の責務です。
 Composition APIはversionを固定して導入します。
 
 ```sh
-pnpm add --save-exact @kubohiroya/turbowarp-svg-text@0.12.0
+pnpm add --save-exact @kubohiroya/turbowarp-svg-text@0.12.1
 ```
 
 standaloneのTurboWarp拡張機能は、version固定のjsDelivr URLから利用できます。
 
 ```text
-https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-svg-text@0.12.0/dist/svg-text.js
+https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-svg-text@0.12.1/dist/svg-text.js
 ```
 
 ## ブロック

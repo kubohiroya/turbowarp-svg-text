@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.1 - 2026-10-28
+
+- Pagesで動作するsamplesデモを追加しました。npm公開物のAPI・拡張ID・既定値は変わりません。
+
 ## 0.12.0 - 2026-10-27
 
 - ビルド依存をmanifest 0.4.0 / plugin 0.9.0 / data-editor 0.4.0へ更新。
