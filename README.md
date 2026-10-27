@@ -6,6 +6,16 @@ English | [日本語](README.ja.md)
 
 TurboWarp-SVG-Text provides responsive named styles, host-neutral plain/ruby layout, and SVG text actors. It is a text provider for host extensions such as `turbowarp-bubble`; Bubble shape, placement, portraits, and animation belong to the host.
 
+## Runnable sample
+
+[**Open the demo in TurboWarp Editor**](https://turbowarp.org/editor?project_url=https%3A%2F%2Fkubohiroya.github.io%2Fturbowarp-svg-text%2Fsamples%2Fstyle-hello-text.sb3) · [Download the SB3](https://kubohiroya.github.io/turbowarp-svg-text/samples/style-hello-text.sb3)
+
+Select **Run without sandbox**, then **Allow**, and click the green flag.
+The sprite changes to blue styled Hello, TurboWarp! text.
+
+Editable sources and expected results: [`samples/README.md`](samples/README.md).
+Run `pnpm run samples:build` after source/bundle changes and `pnpm run samples:check` before committing.
+
 ## Responsibilities
 
 - Define reusable text styles for font, size, color, background, and alignment.

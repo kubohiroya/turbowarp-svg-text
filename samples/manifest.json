@@ -1,0 +1,21 @@
+{
+  "baseURL": "https://kubohiroya.github.io/turbowarp-svg-text/",
+  "extension": {
+    "id": "kubohiroyasvgtext",
+    "bundle": "dist/svg-text.js",
+    "unsandboxed": true
+  },
+  "samples": [
+    {
+      "name": "style-hello-text",
+      "title": "Svg Text minimal demo",
+      "checks": [
+        {
+          "variable": "text",
+          "equals": "Hello, TurboWarp!"
+        }
+      ],
+      "instructions": "The sprite changes to blue styled Hello, TurboWarp! text."
+    }
+  ]
+}

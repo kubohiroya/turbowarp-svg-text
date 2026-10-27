@@ -60,9 +60,12 @@
     "pack:check": "npm pack --dry-run --ignore-scripts",
     "release:check": "pnpm publish --dry-run --access public --no-git-checks",
     "repo:check": "node scripts/check-repo.ts",
-    "check": "pnpm run typecheck && pnpm run lint && pnpm run format && pnpm run test && pnpm run docs:site:check && pnpm run release:consistency:check && pnpm run check:dist && pnpm run composition:dist:check && pnpm run types:composition:check && pnpm run repo:check && pnpm run pack:check",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm run format && pnpm run test && pnpm run docs:site:check && pnpm run release:consistency:check && pnpm run check:dist && pnpm run composition:dist:check && pnpm run types:composition:check && pnpm run repo:check && pnpm run pack:check && pnpm run samples:check",
     "prepack": "pnpm run check",
-    "test:fixed-inputs:native": "node --test tests/fixed-inputs.native.mjs"
+    "test:fixed-inputs:native": "node --test tests/fixed-inputs.native.mjs",
+    "samples:build": "node scripts/build-samples.mjs",
+    "samples:check": "node scripts/build-samples.mjs --check && node --test scripts/verify-samples.mjs",
+    "pages:build": "node scripts/prepare-pages.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -8,6 +8,15 @@ TurboWarp-SVG-Textは、応答的な名前付きスタイル、host非依存のp
 提供します。`turbowarp-bubble`のようなhost拡張機能に対するテキストproviderであり、Bubbleの形状、配置、
 portrait、アニメーションはhost側の責務です。
 
+## 実行できるサンプル
+
+[**TurboWarp Editorでデモを開く**](https://turbowarp.org/editor?project_url=https%3A%2F%2Fkubohiroya.github.io%2Fturbowarp-svg-text%2Fsamples%2Fstyle-hello-text.sb3) · [SB3をダウンロード](https://kubohiroya.github.io/turbowarp-svg-text/samples/style-hello-text.sb3)
+
+**Run without sandbox**を選んで**Allow**し、緑の旗を押します。
+`defineStyle`・`setText`でスプライトを文字へ変更し、色とサイズを確認。サンプルの元データと期待結果は[`samples/README.md`](samples/README.md)に記載しています。
+
+`pnpm run samples:build`でSB3を再生成し、`pnpm run samples:check`で更新漏れと生成処理を確認します。
+
 ## 責務
 
 - フォント、サイズ、色、背景、揃えを持つ再利用可能なテキストスタイルを定義する。
