@@ -1,0 +1,163 @@
+{
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {
+        "sample-state": ["Sample state", ""],
+        "text": ["Displayed text", ""]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "blocks": {},
+      "comments": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "assetId": "",
+          "name": "Instructions",
+          "bitmapResolution": 1,
+          "md5ext": "backdrop.svg",
+          "dataFormat": "svg",
+          "rotationCenterX": 240,
+          "rotationCenterY": 180
+        }
+      ],
+      "sounds": [],
+      "volume": 100,
+      "layerOrder": 0,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null
+    },
+    {
+      "isStage": false,
+      "name": "Demo",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "blocks": {
+        "b1": {
+          "opcode": "event_whenflagclicked",
+          "parent": null,
+          "next": "b2",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": true,
+          "x": 35,
+          "y": 35
+        },
+        "b2": {
+          "opcode": "data_setvariableto",
+          "parent": "b1",
+          "next": "b3",
+          "inputs": {
+            "VALUE": [1, [10, "Running"]]
+          },
+          "fields": {
+            "VARIABLE": ["Sample state", "sample-state"]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "b3": {
+          "opcode": "kubohiroyasvgtext_defineStyle",
+          "parent": "b2",
+          "next": "b5",
+          "inputs": {
+            "STYLE": [1, [10, "sample-style"]],
+            "BACKGROUND": [1, [9, "#e0f2fe"]],
+            "TEXT_COLOR": [1, [9, "#075985"]],
+            "FONT": [1, [10, "Helvetica"]],
+            "SIZE": [1, [4, "100"]],
+            "ALIGN": [1, "b4"]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "b4": {
+          "opcode": "kubohiroyasvgtext_menu_alignment",
+          "parent": "b3",
+          "next": null,
+          "inputs": {},
+          "fields": {
+            "alignment": ["center", null]
+          },
+          "shadow": true,
+          "topLevel": false
+        },
+        "b5": {
+          "opcode": "kubohiroyasvgtext_setText",
+          "parent": "b3",
+          "next": "b6",
+          "inputs": {
+            "TEXT": [1, [10, "Hello, TurboWarp!"]],
+            "STYLE": [1, [10, "sample-style"]]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "b6": {
+          "opcode": "data_setvariableto",
+          "parent": "b5",
+          "next": "b7",
+          "inputs": {
+            "VALUE": [1, [10, "Hello, TurboWarp!"]]
+          },
+          "fields": {
+            "VARIABLE": ["Displayed text", "text"]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "b7": {
+          "opcode": "data_setvariableto",
+          "parent": "b6",
+          "next": null,
+          "inputs": {
+            "VALUE": [1, [10, "Ready"]]
+          },
+          "fields": {
+            "VARIABLE": ["Sample state", "sample-state"]
+          },
+          "shadow": false,
+          "topLevel": false
+        }
+      },
+      "comments": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "assetId": "",
+          "name": "Demo",
+          "bitmapResolution": 1,
+          "md5ext": "sprite.svg",
+          "dataFormat": "svg",
+          "rotationCenterX": 16,
+          "rotationCenterY": 16
+        }
+      ],
+      "sounds": [],
+      "volume": 100,
+      "layerOrder": 1,
+      "visible": true,
+      "x": 0,
+      "y": -20,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around"
+    }
+  ],
+  "monitors": [],
+  "extensions": [],
+  "meta": {
+    "semver": "3.0.0",
+    "vm": "0.2.0",
+    "agent": "TurboWarp Plus minimal samples"
+  }
+}
