@@ -1,6 +1,6 @@
 {
   "name": "@kubohiroya/turbowarp-svg-text",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Host-neutral plain and ruby text layout with SVG text actors for TurboWarp.",
   "author": "Hiroya Kubo <hiroya@cuc.ac.jp>",
   "type": "module",
@@ -66,9 +66,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@kubohiroya/turbowarp-extension-data-editor": "^0.3.4",
-    "@kubohiroya/turbowarp-extension-manifest": "^0.3.2",
-    "@kubohiroya/vite-plugin-turbowarp-extension": "^0.8.0",
+    "@kubohiroya/turbowarp-extension-data-editor": "^0.4.0",
+    "@kubohiroya/turbowarp-extension-manifest": "^0.4.0",
+    "@kubohiroya/vite-plugin-turbowarp-extension": "^0.9.0",
     "@types/node": "^26.1.2",
     "eslint": "^10.8.0",
     "prettier": "^3.9.6",
@@ -86,9 +86,9 @@
     "named-styles",
     "multiline"
   ],
-  "gitHead": "280085099b82e1d537c56a6fa1efd228137cf766",
+  "gitHead": "6c69b4367bada206913486ca368a222d763e1a95",
   "x-turbowarp-source": {
-    "revision": "280085099b82e1d537c56a6fa1efd228137cf766",
+    "revision": "6c69b4367bada206913486ca368a222d763e1a95",
     "revisionRole": "base-commit",
     "sourceState": "local-release-overlay"
   }
