@@ -76,13 +76,19 @@ function checkPolicy() {
 }
 
 function checkPackageMetadata() {
-  for (const key of [
-    "description",
-    "author",
-    "license",
-    "homepage",
-    "packageManager",
-  ]) {
+  if (
+    typeof packageMetadata.author !== "object" ||
+    packageMetadata.author === null ||
+    Array.isArray(packageMetadata.author) ||
+    packageMetadata.author.name !== "Hiroya Kubo" ||
+    packageMetadata.author.email !== "hiroya@cuc.ac.jp" ||
+    packageMetadata.author.url !== "https://github.com/kubohiroya"
+  ) {
+    errors.push(
+      "package.json author must use the approved name, email, and URL",
+    );
+  }
+  for (const key of ["description", "license", "homepage", "packageManager"]) {
     if (
       typeof packageMetadata[key] !== "string" ||
       packageMetadata[key].trim().length === 0
