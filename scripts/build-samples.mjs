@@ -47,20 +47,41 @@ function zip(entries) {
   return Buffer.concat([...local, directory, end]);
 }
 
-
 // Keep declarative metadata visible before any sample-specific executable wrapper.
 export function withSecurityMetadata(bundle, extension, code = bundle) {
-  assert.equal(typeof extension.unsandboxed, 'boolean', 'Declare the sandbox requirement explicitly');
-  const header = bundle.slice(0, 16384).match(/^\s*(?:(?:\/\/[^\n]*(?:\n|$))|(?:\/\*[\s\S]*?\*\/)\s*)*/)[0];
+  assert.equal(
+    typeof extension.unsandboxed,
+    "boolean",
+    "Declare the sandbox requirement explicitly",
+  );
+  const header = bundle
+    .slice(0, 16384)
+    .match(/^\s*(?:(?:\/\/[^\n]*(?:\n|$))|(?:\/\*[\s\S]*?\*\/)\s*)*/)[0];
   const fields = [...header.matchAll(/^\/\/\s*([^:\r\n]+):\s*([^\r\n]*)/gm)];
-  const field = name => fields.find(match => match[1].trim().toLowerCase() === name)?.[2].trim();
-  assert.equal(field('id'), extension.id, 'Leading bundle ID must match the manifest');
-  assert.ok(field('name'), 'Bundle must declare its name before executable code');
-  const requirement = extension.unsandboxed ? 'required' : 'not-needed';
-  for (const match of fields.filter(match => match[1].trim().toLowerCase() === 'unsandboxed')) {
-    assert.equal(match[2].trim().toLowerCase(), requirement, 'Conflicting sandbox declaration');
+  const field = (name) =>
+    fields.find((match) => match[1].trim().toLowerCase() === name)?.[2].trim();
+  assert.equal(
+    field("id"),
+    extension.id,
+    "Leading bundle ID must match the manifest",
+  );
+  assert.ok(
+    field("name"),
+    "Bundle must declare its name before executable code",
+  );
+  const requirement = extension.unsandboxed ? "required" : "not-needed";
+  for (const match of fields.filter(
+    (match) => match[1].trim().toLowerCase() === "unsandboxed",
+  )) {
+    assert.equal(
+      match[2].trim().toLowerCase(),
+      requirement,
+      "Conflicting sandbox declaration",
+    );
   }
-  const metadata = header.replace(/^\/\/\s*Unsandboxed:[^\n]*(?:\n|$)/gim, '').trimEnd();
+  const metadata = header
+    .replace(/^\/\/\s*Unsandboxed:[^\n]*(?:\n|$)/gim, "")
+    .trimEnd();
   return `${metadata}\n// Unsandboxed: ${requirement}\n\n${code}`;
 }
 
