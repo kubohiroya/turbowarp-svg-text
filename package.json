@@ -1,6 +1,6 @@
 {
   "name": "@kubohiroya/turbowarp-svg-text",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Host-neutral plain and ruby text layout with SVG text actors for TurboWarp.",
   "author": {
     "name": "Hiroya Kubo",
@@ -73,9 +73,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@kubohiroya/turbowarp-extension-data-editor": "^0.5.0",
+    "@kubohiroya/turbowarp-extension-data-editor": "^0.8.1",
     "@kubohiroya/turbowarp-extension-manifest": "^0.5.0",
-    "@kubohiroya/vite-plugin-turbowarp-extension": "^0.10.0",
+    "@kubohiroya/vite-plugin-turbowarp-extension": "^0.11.0",
     "@types/node": "^26.1.2",
     "eslint": "^10.8.0",
     "prettier": "^3.9.6",
