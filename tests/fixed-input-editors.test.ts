@@ -295,6 +295,56 @@ describe("fixed input owner contracts", () => {
     expect(removed).toHaveBeenCalledTimes(options.length);
     vi.unstubAllGlobals();
   });
+  it("registers the same editors again after each project load until the owner disposes", () => {
+    // vm.loadProject disposes the runtime but keeps the extension loaded.
+    const calls: FixedInputEditorOptions[] = [];
+    const removes: ReturnType<typeof vi.fn>[] = [];
+    const listeners = new Map<string, Set<() => void>>();
+    const runtime = {
+      on: (name: string, fn: () => void) => {
+        if (!listeners.has(name)) listeners.set(name, new Set());
+        listeners.get(name)!.add(fn);
+      },
+      off: (name: string, fn: () => void) => listeners.get(name)?.delete(fn),
+    };
+    const emit = (name: string) => {
+      for (const fn of [...(listeners.get(name) ?? [])]) fn();
+    };
+    const dispose = registerFixedInputEditors(
+      scratch({
+        apiVersion: 1,
+        registerFixedInputEditor: (o: FixedInputEditorOptions) => {
+          calls.push(o);
+          const remove = vi.fn();
+          removes.push(remove);
+          return remove;
+        },
+      }),
+      runtime,
+    );
+    expect(calls).toHaveLength(options.length);
+    emit("RUNTIME_DISPOSED");
+    expect(removes.every((remove) => remove.mock.calls.length === 1)).toBe(
+      true,
+    );
+    emit("PROJECT_LOADED");
+    expect(calls).toHaveLength(options.length * 2);
+    expect(calls.slice(options.length).map((o) => o.opcodes)).toEqual(
+      calls.slice(0, options.length).map((o) => o.opcodes),
+    );
+    emit("PROJECT_LOADED");
+    expect(calls).toHaveLength(options.length * 2);
+    dispose?.();
+    expect(removes.every((remove) => remove.mock.calls.length === 1)).toBe(
+      true,
+    );
+    expect(listeners.get("RUNTIME_DISPOSED")?.size ?? 0).toBe(0);
+    expect(listeners.get("PROJECT_LOADED")?.size ?? 0).toBe(0);
+    emit("RUNTIME_DISPOSED");
+    emit("PROJECT_LOADED");
+    expect(calls).toHaveLength(options.length * 2);
+    expect(removes).toHaveLength(options.length * 2);
+  });
   it("keeps old hosts inert and rolls back partial registration", () => {
     for (const api of [
       undefined,
