@@ -672,12 +672,20 @@ var SvgTextExtension = class {
 	* Consumers receive current layout data without access to the mutable registry.
 	*/
 	getLayoutCapability() {
-		this.layoutCapabilityValue ??= Object.freeze({ layoutText: (input) => {
-			if (typeof input !== "object" || input === null || typeof input.styleName !== "string" || typeof input.text !== "string") throw new TypeError("SVG Text layout capability input is invalid.");
-			const nativeSize = this.requireLayoutNativeSize(input.nativeSize);
-			const selection = this.resolveStyle(input.styleName);
-			return createSvgTextLayout(this.normalizeMessage(input.text), selection.definition, nativeSize);
-		} });
+		this.layoutCapabilityValue ??= Object.freeze({
+			layoutText: (input) => {
+				if (typeof input !== "object" || input === null || typeof input.styleName !== "string" || typeof input.text !== "string") throw new TypeError("SVG Text layout capability input is invalid.");
+				const nativeSize = this.requireLayoutNativeSize(input.nativeSize);
+				const selection = this.resolveStyle(input.styleName);
+				return createSvgTextLayout(this.normalizeMessage(input.text), selection.definition, nativeSize);
+			},
+			layoutRichText: (input) => {
+				if (typeof input !== "object" || input === null || typeof input.styleName !== "string") throw new TypeError("SVG Text rich layout capability input is invalid.");
+				this.requireLayoutNativeSize(input.nativeSize);
+				const selection = this.resolveStyle(input.styleName);
+				return layoutRichTextFromStyles(/* @__PURE__ */ new Map([[input.styleName, selection.definition]]), input);
+			}
+		});
 		return this.layoutCapabilityValue;
 	}
 	setCompositionText(styleName, render, target) {
@@ -964,6 +972,10 @@ function layoutTextFromStyles(styles, input) {
 	if (typeof input.text !== "string") throw compositionError("SVG-TEXT-COMPOSITION-001", "SVG Text text must be a string.");
 	return createSvgTextLayout(normalizeText(input.text), definition, validateNativeSize(input.nativeSize));
 }
+/**
+* Lays out content runs, ruby included, with one named style. The composition and the extension's
+* layout capability share it, so both validate runs, sizes and limits the same way.
+*/
 function layoutRichTextFromStyles(styles, input) {
 	if (!isRecord(input)) throw compositionError("SVG-TEXT-COMPOSITION-001", "SVG Text rich layout input is invalid.");
 	requireExactKeys(input, [
@@ -1115,4 +1127,4 @@ function createSvgTextComposition(options) {
 	});
 }
 //#endregion
-export { createSvgTextComposition, createSvgTextLayoutComposition };
+export { createSvgTextComposition, createSvgTextLayoutComposition, layoutRichTextFromStyles };

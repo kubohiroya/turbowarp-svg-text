@@ -1,4 +1,4 @@
-import { type SvgTextAlignment, type SvgTextContentRun, type SvgTextLayout, type SvgTextNativeSize, type SvgTextRichLayout } from "./text-layout.js";
+import { type SvgTextAlignment, type SvgTextContentRun, type SvgTextLayout, type SvgTextNativeSize, type SvgTextRichLayout, type SvgTextRichStyleDefinition } from "./text-layout.js";
 export type { SvgTextAlignment, SvgTextContentRubyRun, SvgTextContentRun, SvgTextContentTextRun, SvgTextLayout, SvgTextLayoutLine, SvgTextLayoutStyle, SvgTextNativeSize, SvgTextRevealUnit, SvgTextRichLayout, SvgTextRichLayoutFragment, SvgTextRichLayoutGlyph, SvgTextRichLayoutLine, SvgTextRichLayoutRubyFragment, SvgTextRichLayoutStyle, SvgTextRichLayoutTextFragment, } from "./text-layout.js";
 export interface SvgTextStyleInput {
     name: string;
@@ -70,5 +70,10 @@ export interface SvgTextMeasureInput {
 export interface SvgTextCompositionOptions {
     runtime: SvgTextCompositionRuntime;
 }
+/**
+ * Lays out content runs, ruby included, with one named style. The composition and the extension's
+ * layout capability share it, so both validate runs, sizes and limits the same way.
+ */
+export declare function layoutRichTextFromStyles(styles: ReadonlyMap<string, Readonly<SvgTextRichStyleDefinition>>, input: unknown): SvgTextRichLayout;
 export declare function createSvgTextLayoutComposition(): SvgTextLayoutComposition;
 export declare function createSvgTextComposition(options: SvgTextCompositionOptions): SvgTextComposition;

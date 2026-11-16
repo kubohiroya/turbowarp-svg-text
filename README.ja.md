@@ -173,6 +173,22 @@ const layout = textLayouts.layoutText({
 レイアウト結果が変わりますが、すでに返された深く凍結済みのレイアウトデータは変わりません。存在しない
 スタイルは標準の拡張機能の既存の挙動に従い、その`default`スタイルで解決されます。
 
+このcapabilityには`layoutRichText()`もあります。同じ名前付きスタイルのregistryで、型付きの`text`と
+`ruby`のrunをレイアウトし、後述のhost非依存のrichレイアウト（ルビのサイズと間隔を含む）を返します。run、
+上限、`maxWidth`の検証は`createSvgTextLayoutComposition().layoutRichText()`と同じです。TurboWarp Bubbleの
+SVG overlayは、この拡張機能が単独で読み込まれているとき、これを使ってルビ付きの吹き出しを描きます。
+
+```ts
+const rich = textLayouts.layoutRichText({
+  styleName: "dialogue-text",
+  runs: [
+    { type: "text", text: "昔、" },
+    { type: "ruby", base: "浦島", reading: "うらしま" },
+  ],
+  nativeSize: [480, 360],
+});
+```
+
 ### host非依存のルビテキストレイアウト
 
 `layoutRichText()`は、型付きの`text`と`ruby`のrunを受け取ります。rubyのrunは、親文字と読みを1つの

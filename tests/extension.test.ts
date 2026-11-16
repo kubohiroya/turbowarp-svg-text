@@ -177,6 +177,85 @@ describe("SVG Text extension", () => {
     expect(fake.created).toHaveLength(0);
   });
 
+  it("lays out ruby through the layout capability with the named style", () => {
+    const fake = harness();
+    const extension = new SvgTextExtension(fake.runtime);
+    extension.defineStyle({
+      STYLE: "dialogue",
+      BACKGROUND: "transparent",
+      TEXT_COLOR: "#123456",
+      FONT: "Noto Sans JP",
+      SIZE: 150,
+      ALIGN: "left",
+      RUBY_SIZE: 40,
+      RUBY_GAP: 2,
+    });
+    const capability = extension.getLayoutCapability();
+    const runs = [
+      { type: "text", text: "昔" },
+      { type: "ruby", base: "浦島", reading: "うらしま" },
+    ] as const;
+    const layout = capability.layoutRichText({
+      nativeSize: [480, 360],
+      styleName: "dialogue",
+      runs,
+    });
+
+    expect(layout.style).toMatchObject({
+      alignment: "left",
+      fontPercent: 150,
+      rubyFontPercent: 40,
+    });
+    const fragments = layout.lines.flatMap((line) => line.fragments);
+    const ruby = fragments.find((fragment) => fragment.type === "ruby");
+    expect(ruby).toMatchObject({
+      type: "ruby",
+      base: { text: "浦島" },
+      reading: { text: "うらしま" },
+    });
+    if (ruby?.type !== "ruby") throw new Error("expected a ruby fragment");
+    expect(ruby.reading.fontSize).toBeLessThan(ruby.base.fontSize);
+    expect(ruby.reading.baseline).toBeLessThan(ruby.base.baseline);
+    expect(fake.created).toHaveLength(0);
+
+    // An unknown style falls back to the default style, as layoutText does.
+    const fallback = capability.layoutRichText({
+      nativeSize: [480, 360],
+      styleName: "missing",
+      runs,
+    });
+    expect(fallback.style.fontPercent).toBe(100);
+  });
+
+  it("validates public rich layout capability input", () => {
+    const capability = new SvgTextExtension(
+      harness().runtime,
+    ).getLayoutCapability();
+    const runs = [{ type: "ruby", base: "浦島", reading: "うらしま" }] as const;
+    expect(() =>
+      capability.layoutRichText({
+        nativeSize: [0, 360],
+        styleName: "default",
+        runs,
+      }),
+    ).toThrow("two positive finite numbers");
+    expect(() =>
+      capability.layoutRichText({
+        nativeSize: [480, 360],
+        styleName: "default",
+        runs: "not runs" as never,
+      }),
+    ).toThrow("content runs must be an array");
+    expect(() =>
+      capability.layoutRichText({
+        nativeSize: [480, 360],
+        styleName: "default",
+        runs,
+        maxWidth: -1,
+      }),
+    ).toThrow("maxWidth");
+  });
+
   it("validates public layout capability input", () => {
     const capability = new SvgTextExtension(
       harness().runtime,

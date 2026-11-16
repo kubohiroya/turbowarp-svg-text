@@ -338,6 +338,165 @@ function createSvgTextLayout(text, definition, nativeSize) {
     width
   });
 }
+function createSvgTextRichLayout(runs, definition, nativeSize, maxWidth) {
+  const metrics = createTextMetrics(definition, nativeSize);
+  const rubyFontSize = metrics.fontSize * (definition.rubyFontPercent / defaultFontPercent$1);
+  const rubyGap = definition.rubyGap * metrics.fontScale;
+  const style = Object.freeze({
+    ...createLayoutStyle(definition, metrics),
+    rubyFontPercent: definition.rubyFontPercent,
+    rubyFontSize,
+    rubyGap
+  });
+  const plainText = runs.map((run) => run.type === "ruby" ? run.base : run.text).join("");
+  const readingText = runs.map((run) => run.type === "ruby" ? run.reading : run.text).join("");
+  const revealUnits = [];
+  const items = [];
+  for (const [runIndex, run] of runs.entries()) {
+    if (run.type === "ruby") {
+      const reveal = Object.freeze({
+        end: run.base.length,
+        index: revealUnits.length,
+        runIndex,
+        start: 0,
+        type: "ruby"
+      });
+      revealUnits.push(reveal);
+      const baseWidth = measureTextWidth(run.base, metrics.fontSize);
+      const readingWidth = measureTextWidth(run.reading, rubyFontSize);
+      items.push({
+        base: run.base,
+        baseWidth,
+        reading: run.reading,
+        readingWidth,
+        reveal,
+        type: "ruby",
+        width: Math.max(baseWidth, readingWidth)
+      });
+      continue;
+    }
+    for (const grapheme of segmentGraphemes(run.text)) {
+      if (grapheme.segment === "\n") {
+        items.push("break");
+        continue;
+      }
+      const reveal = Object.freeze({
+        end: grapheme.end,
+        index: revealUnits.length,
+        runIndex,
+        start: grapheme.start,
+        type: "text"
+      });
+      revealUnits.push(reveal);
+      items.push({
+        reveal,
+        text: grapheme.segment,
+        type: "text",
+        width: measureTextWidth(grapheme.segment, metrics.fontSize)
+      });
+    }
+  }
+  const contentLimit = maxWidth === void 0 ? void 0 : Math.max(1, maxWidth - metrics.padding * 2);
+  const pendingLines = [];
+  let pendingLine = {
+    units: [],
+    width: 0
+  };
+  const finishLine = () => {
+    pendingLines.push(pendingLine);
+    pendingLine = {
+      units: [],
+      width: 0
+    };
+  };
+  for (const item of items) {
+    if (item === "break") {
+      finishLine();
+      continue;
+    }
+    if (contentLimit !== void 0 && pendingLine.units.length > 0 && pendingLine.width + item.width > contentLimit) finishLine();
+    pendingLine.units.push(item);
+    pendingLine.width += item.width;
+  }
+  finishLine();
+  const naturalWidth = Math.max(1, ...pendingLines.map((line) => line.width)) + metrics.padding * 2;
+  const width = Math.max(1, Math.ceil(maxWidth === void 0 ? naturalWidth : Math.max(maxWidth, naturalWidth)));
+  const baseDescent = Math.max(0, metrics.lineHeight - metrics.fontSize);
+  let lineTop = metrics.padding;
+  const lines = Object.freeze(pendingLines.map((pending) => {
+    const hasRuby = pending.units.some((unit) => unit.type === "ruby");
+    const ascent = metrics.fontSize + (hasRuby ? rubyFontSize + rubyGap : 0);
+    const descent = baseDescent;
+    const height = ascent + descent;
+    const baseline = lineTop + ascent;
+    const x = definition.alignment === "center" ? (width - pending.width) / 2 : definition.alignment === "right" ? width - metrics.padding - pending.width : metrics.padding;
+    let fragmentX = x;
+    const fragments = Object.freeze(pending.units.map((unit) => {
+      if (unit.type === "text") {
+        const fragment = Object.freeze({
+          baseline,
+          revealIndex: unit.reveal.index,
+          text: unit.text,
+          type: "text",
+          width: unit.width,
+          x: fragmentX
+        });
+        fragmentX += unit.width;
+        return fragment;
+      }
+      const groupX = fragmentX;
+      const base = Object.freeze({
+        baseline,
+        fontSize: metrics.fontSize,
+        text: unit.base,
+        width: unit.baseWidth,
+        x: groupX + (unit.width - unit.baseWidth) / 2
+      });
+      const reading = Object.freeze({
+        baseline: baseline - metrics.fontSize - rubyGap,
+        fontSize: rubyFontSize,
+        text: unit.reading,
+        width: unit.readingWidth,
+        x: groupX + (unit.width - unit.readingWidth) / 2
+      });
+      const fragment = Object.freeze({
+        base,
+        reading,
+        revealIndex: unit.reveal.index,
+        type: "ruby",
+        width: unit.width,
+        x: groupX
+      });
+      fragmentX += unit.width;
+      return fragment;
+    }));
+    const line = Object.freeze({
+      ascent,
+      baseline,
+      descent,
+      fragments,
+      height,
+      overflow: contentLimit !== void 0 && pending.width > contentLimit,
+      width: pending.width,
+      x
+    });
+    lineTop += height;
+    return line;
+  }));
+  const height = Math.max(1, Math.ceil(lineTop + metrics.padding));
+  const overflow = lines.some((line) => line.overflow);
+  return Object.freeze({
+    height,
+    lines,
+    overflow,
+    plainText,
+    preserveWhitespace: true,
+    readingText,
+    revealUnits: Object.freeze(revealUnits),
+    style,
+    width
+  });
+}
 function renderSvgTextLayout(layout) {
   const textAnchor = layout.style.alignment === "center" ? "middle" : layout.style.alignment === "right" ? "end" : "start";
   const text = layout.lines.map((line) => line.text).join("\n");
@@ -386,6 +545,38 @@ function createLayoutStyle(definition, metrics) {
     textColor: definition.textColor
   });
 }
+function segmentGraphemes(value) {
+  const segments = [];
+  let current = "";
+  let currentStart = 0;
+  let joinNext = false;
+  let offset = 0;
+  for (const character of value) {
+    if (!(current !== "" && (joinNext || character === "‍" || isGraphemeExtender(character))) && current !== "") {
+      segments.push({
+        end: offset,
+        segment: current,
+        start: currentStart
+      });
+      current = "";
+    }
+    if (current === "") currentStart = offset;
+    current += character;
+    joinNext = character === "‍";
+    offset += character.length;
+  }
+  if (current !== "") segments.push({
+    end: offset,
+    segment: current,
+    start: currentStart
+  });
+  return segments;
+}
+function isGraphemeExtender(character) {
+  if (/\p{Mark}/u.test(character)) return true;
+  const codePoint = character.codePointAt(0) ?? 0;
+  return codePoint >= 65024 && codePoint <= 65039 || codePoint >= 917760 && codePoint <= 917999 || codePoint >= 127995 && codePoint <= 127999;
+}
 function measureTextWidth(text, fontSize) {
   let units = 0;
   for (const character of text) {
@@ -412,6 +603,115 @@ function escapeXml(value) {
 }
 function formatSvgNumber(value) {
   return String(Math.round(value * 1e3) / 1e3);
+}
+//#endregion
+//#region src/composition.ts
+var maximumContentCharacters = 1e5;
+var maximumContentLines = 1e3;
+var maximumContentRuns = 1024;
+var maximumLayoutFragments = 1e4;
+var maximumLayoutWidth = 1e5;
+var maximumRubyBaseCharacters = 256;
+var maximumRubyReadingCharacters = 512;
+function isRecord(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function compositionError(code, message) {
+  const error = new Error(message);
+  Object.defineProperty(error, "code", { value: code });
+  return error;
+}
+function requireExactKeys(value, required, optional, label) {
+  const allowed = /* @__PURE__ */ new Set([...required, ...optional]);
+  if (required.some((key) => !Object.prototype.hasOwnProperty.call(value, key)) || Object.keys(value).some((key) => !allowed.has(key))) throw compositionError("SVG-TEXT-COMPOSITION-001", `${label} has missing or unknown properties.`);
+}
+function requireName(value, label) {
+  if (typeof value !== "string" || value.trim().length === 0) throw compositionError("SVG-TEXT-COMPOSITION-001", `${label} must be a non-empty string.`);
+  return value.trim();
+}
+function validateNativeSize(value) {
+  if (!Array.isArray(value) || value.length !== 2 || value.some((dimension) => typeof dimension !== "number" || !Number.isFinite(dimension) || dimension <= 0)) throw compositionError("SVG-TEXT-COMPOSITION-001", "SVG Text nativeSize must be [width, height] with two positive finite numbers.");
+  return value;
+}
+function normalizeText(value) {
+  return value.replace(/\\r\\n|\\n|\\r/gu, "\n");
+}
+function normalizeRichText(value) {
+  return normalizeText(value.replace(/\r\n?|\n/gu, "\n"));
+}
+function contentLimitError(message) {
+  return compositionError("SVG-TEXT-COMPOSITION-007", message);
+}
+function validateContentRuns(value) {
+  if (!Array.isArray(value)) throw compositionError("SVG-TEXT-COMPOSITION-001", "SVG Text rich content runs must be an array.");
+  if (value.length > maximumContentRuns) throw contentLimitError(`SVG Text rich content exceeds ${maximumContentRuns} runs.`);
+  let characterCount = 0;
+  let fragmentCount = 0;
+  let lineCount = 1;
+  const runs = value.map((candidate, runIndex) => {
+    if (!isRecord(candidate)) throw compositionError("SVG-TEXT-COMPOSITION-001", `SVG Text rich content run ${runIndex} must be an object.`);
+    if (candidate.type === "text") {
+      requireExactKeys(candidate, ["type", "text"], [], `SVG Text rich content run ${runIndex}`);
+      if (typeof candidate.text !== "string") throw compositionError("SVG-TEXT-COMPOSITION-001", `SVG Text rich content run ${runIndex} text must be a string.`);
+      const text = normalizeRichText(candidate.text);
+      characterCount += text.length;
+      lineCount += text.split("\n").length - 1;
+      fragmentCount += [...text.replace(/\n/gu, "")].length;
+      return Object.freeze({
+        text,
+        type: "text"
+      });
+    }
+    if (candidate.type === "ruby") {
+      requireExactKeys(candidate, [
+        "type",
+        "base",
+        "reading"
+      ], [], `SVG Text rich content run ${runIndex}`);
+      if (typeof candidate.base !== "string" || typeof candidate.reading !== "string") throw compositionError("SVG-TEXT-COMPOSITION-001", `SVG Text rich content run ${runIndex} ruby base and reading must be strings.`);
+      const base = normalizeRichText(candidate.base);
+      const reading = normalizeRichText(candidate.reading);
+      if (base.length === 0 || reading.length === 0 || base.includes("\n") || reading.includes("\n")) throw compositionError("SVG-TEXT-COMPOSITION-001", `SVG Text rich content run ${runIndex} ruby base and reading must be non-empty single-line strings.`);
+      if (base.length > maximumRubyBaseCharacters) throw contentLimitError(`SVG Text ruby base exceeds ${maximumRubyBaseCharacters} characters.`);
+      if (reading.length > maximumRubyReadingCharacters) throw contentLimitError(`SVG Text ruby reading exceeds ${maximumRubyReadingCharacters} characters.`);
+      characterCount += base.length + reading.length;
+      fragmentCount += 1;
+      return Object.freeze({
+        base,
+        reading,
+        type: "ruby"
+      });
+    }
+    throw compositionError("SVG-TEXT-COMPOSITION-001", `SVG Text rich content run ${runIndex} type is invalid.`);
+  });
+  if (characterCount > maximumContentCharacters) throw contentLimitError(`SVG Text rich content exceeds ${maximumContentCharacters} characters.`);
+  if (lineCount > maximumContentLines) throw contentLimitError(`SVG Text rich content exceeds ${maximumContentLines} lines.`);
+  if (fragmentCount > maximumLayoutFragments) throw contentLimitError(`SVG Text rich content exceeds ${maximumLayoutFragments} layout fragments.`);
+  return Object.freeze(runs);
+}
+function validateMaxWidth(value) {
+  if (value === void 0) return void 0;
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0 || value > maximumLayoutWidth) throw compositionError("SVG-TEXT-COMPOSITION-001", `SVG Text maxWidth must be a finite number greater than 0 and no greater than ${maximumLayoutWidth}.`);
+  return value;
+}
+/**
+* Lays out content runs, ruby included, with one named style. The composition and the extension's
+* layout capability share it, so both validate runs, sizes and limits the same way.
+*/
+function layoutRichTextFromStyles(styles, input) {
+  if (!isRecord(input)) throw compositionError("SVG-TEXT-COMPOSITION-001", "SVG Text rich layout input is invalid.");
+  requireExactKeys(input, [
+    "styleName",
+    "runs",
+    "nativeSize"
+  ], ["maxWidth"], "SVG Text rich layout input");
+  const styleName = requireName(input.styleName, "SVG Text styleName");
+  const definition = styles.get(styleName);
+  if (!definition) throw compositionError("SVG-TEXT-COMPOSITION-003", `SVG Text style is not defined: ${styleName}`);
+  const runs = validateContentRuns(input.runs);
+  const nativeSize = validateNativeSize(input.nativeSize);
+  const maxWidth = validateMaxWidth(input.maxWidth);
+  return maxWidth === void 0 ? createSvgTextRichLayout(runs, definition, nativeSize) : createSvgTextRichLayout(runs, definition, nativeSize, maxWidth);
 }
 //#endregion
 //#region src/extension.ts
@@ -481,12 +781,20 @@ var SvgTextExtension = class {
   * Consumers receive current layout data without access to the mutable registry.
   */
   getLayoutCapability() {
-    this.layoutCapabilityValue ?? (this.layoutCapabilityValue = Object.freeze({ layoutText: (input) => {
-      if (typeof input !== "object" || input === null || typeof input.styleName !== "string" || typeof input.text !== "string") throw new TypeError("SVG Text layout capability input is invalid.");
-      const nativeSize = this.requireLayoutNativeSize(input.nativeSize);
-      const selection = this.resolveStyle(input.styleName);
-      return createSvgTextLayout(this.normalizeMessage(input.text), selection.definition, nativeSize);
-    } }));
+    this.layoutCapabilityValue ?? (this.layoutCapabilityValue = Object.freeze({
+      layoutText: (input) => {
+        if (typeof input !== "object" || input === null || typeof input.styleName !== "string" || typeof input.text !== "string") throw new TypeError("SVG Text layout capability input is invalid.");
+        const nativeSize = this.requireLayoutNativeSize(input.nativeSize);
+        const selection = this.resolveStyle(input.styleName);
+        return createSvgTextLayout(this.normalizeMessage(input.text), selection.definition, nativeSize);
+      },
+      layoutRichText: (input) => {
+        if (typeof input !== "object" || input === null || typeof input.styleName !== "string") throw new TypeError("SVG Text rich layout capability input is invalid.");
+        this.requireLayoutNativeSize(input.nativeSize);
+        const selection = this.resolveStyle(input.styleName);
+        return layoutRichTextFromStyles(/* @__PURE__ */ new Map([[input.styleName, selection.definition]]), input);
+      }
+    }));
     return this.layoutCapabilityValue;
   }
   setCompositionText(styleName, render, target) {

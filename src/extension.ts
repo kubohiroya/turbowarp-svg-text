@@ -1,6 +1,7 @@
 import definitions from "./block-definitions.json";
 import { registerFixedInputEditors } from "./fixed-input-editors.js";
 import { extensionConfig } from "./config.js";
+import { layoutRichTextFromStyles } from "./composition.js";
 import {
   createSvgTextLayout,
   DEFAULT_SVG_TEXT_RICH_STYLE,
@@ -10,7 +11,9 @@ import {
   renderSvgTextLayout,
   type SvgTextAlignment,
   type SvgTextLayout,
+  type SvgTextContentRun,
   type SvgTextNativeSize,
+  type SvgTextRichLayout,
   type SvgTextRichStyleDefinition,
 } from "./text-layout.js";
 
@@ -96,6 +99,18 @@ export interface SvgTextLayoutCapability {
       text: string;
     }>,
   ): SvgTextLayout;
+  /**
+   * Lays out content runs, ruby included, with the same named-style registry. Bubble's SVG overlay
+   * uses it to draw speech with ruby when this extension is loaded on its own.
+   */
+  layoutRichText(
+    input: Readonly<{
+      maxWidth?: number;
+      nativeSize: SvgTextNativeSize;
+      runs: readonly SvgTextContentRun[];
+      styleName: string;
+    }>,
+  ): SvgTextRichLayout;
 }
 
 const blockDefinitions = definitions.blocks as readonly BlockDefinition[];
@@ -218,6 +233,27 @@ export class SvgTextExtension implements TurboWarpExtension {
           this.normalizeMessage(input.text),
           selection.definition,
           nativeSize,
+        );
+      },
+      layoutRichText: (
+        input: Parameters<SvgTextLayoutCapability["layoutRichText"]>[0],
+      ): SvgTextRichLayout => {
+        if (
+          typeof input !== "object" ||
+          input === null ||
+          typeof input.styleName !== "string"
+        ) {
+          throw new TypeError(
+            "SVG Text rich layout capability input is invalid.",
+          );
+        }
+        this.requireLayoutNativeSize(input.nativeSize);
+        // Like layoutText, an unknown style falls back to the default one. The composition's
+        // rich layout then validates the runs, the limits and maxWidth as it does for its own.
+        const selection = this.resolveStyle(input.styleName);
+        return layoutRichTextFromStyles(
+          new Map([[input.styleName, selection.definition]]),
+          input,
         );
       },
     });
