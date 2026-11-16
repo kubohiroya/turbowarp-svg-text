@@ -1,4 +1,4 @@
-import { type SvgTextLayout, type SvgTextNativeSize, type SvgTextRichStyleDefinition } from "./text-layout.js";
+import { type SvgTextLayout, type SvgTextContentRun, type SvgTextNativeSize, type SvgTextRichLayout, type SvgTextRichStyleDefinition } from "./text-layout.js";
 export type { SvgTextRichStyleDefinition, SvgTextStyleDefinition, } from "./text-layout.js";
 interface TextActorArguments {
     STYLE: unknown;
@@ -31,6 +31,16 @@ export interface SvgTextLayoutCapability {
         styleName: string;
         text: string;
     }>): SvgTextLayout;
+    /**
+     * Lays out content runs, ruby included, with the same named-style registry. Bubble's SVG overlay
+     * uses it to draw speech with ruby when this extension is loaded on its own.
+     */
+    layoutRichText(input: Readonly<{
+        maxWidth?: number;
+        nativeSize: SvgTextNativeSize;
+        runs: readonly SvgTextContentRun[];
+        styleName: string;
+    }>): SvgTextRichLayout;
 }
 export declare const EXTENSION_DOCS_URI = "https://kubohiroya.github.io/turbowarp-svg-text/";
 export declare const BLOCK_ICON_URI: `data:image/svg+xml,${string}`;

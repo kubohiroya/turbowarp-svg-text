@@ -524,7 +524,11 @@ function layoutTextFromStyles(
   );
 }
 
-function layoutRichTextFromStyles(
+/**
+ * Lays out content runs, ruby included, with one named style. The composition and the extension's
+ * layout capability share it, so both validate runs, sizes and limits the same way.
+ */
+export function layoutRichTextFromStyles(
   styles: ReadonlyMap<string, Readonly<SvgTextRichStyleDefinition>>,
   input: unknown,
 ): SvgTextRichLayout {

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- 拡張機能の `getLayoutCapability()` に `layoutRichText()` を追加。名前付きスタイルで、ルビを含む content run をレイアウトする。検証は composition の `layoutRichText()` と同じ。TurboWarp Bubble の SVG overlay が、単独で読み込まれた SVG Text でもルビ付きの吹き出しを描けるようにするため。
+
 ## 0.14.1 - 2026-11-15
 
 - 別の作品を開いたあとも、ブロックの編集ダイアログを開けるように修正。

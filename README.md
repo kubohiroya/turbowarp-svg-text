@@ -152,6 +152,19 @@ const layout = textLayouts.layoutText({
 
 The capability does not expose the mutable style map. Redefining a style through the stock extension changes subsequent layout results, while previously returned deeply frozen layout data remains unchanged. A missing style follows the stock extension's existing behavior and resolves through its `default` style.
 
+The capability also has `layoutRichText()`, which lays out typed `text` and `ruby` runs against the same named-style registry and returns the host-neutral rich layout described below (ruby size and gap included). It validates runs, limits, and `maxWidth` exactly as `createSvgTextLayoutComposition().layoutRichText()` does. TurboWarp Bubble's SVG overlay uses it to draw speech with ruby when this extension is loaded on its own.
+
+```ts
+const rich = textLayouts.layoutRichText({
+  styleName: "dialogue-text",
+  runs: [
+    { type: "text", text: "Once, " },
+    { type: "ruby", base: "浦島", reading: "うらしま" },
+  ],
+  nativeSize: [480, 360],
+});
+```
+
 ### Host-neutral ruby text layout
 
 `layoutRichText()` accepts typed `text` and `ruby` runs. A ruby run keeps its base and reading together as one wrapping and reveal unit. The returned layout contains explicit geometry for both glyph rows, deterministic `plainText` and `readingText` projections, and no markup or executable values.
