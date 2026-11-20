@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.16.1 - 2026-11-21
+
+- パッケージにリソース利用宣言を追加。切り戻しは `@kubohiroya/turbowarp-svg-text@0.16.0` に固定。
+
 ## 0.16.0 - 2026-11-20
 
 - family依存を更新。ロールバックは @kubohiroya/turbowarp-svg-text@0.15.0 へ固定。
