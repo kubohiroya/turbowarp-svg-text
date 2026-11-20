@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.16.0 - 2026-11-20
+
+- family依存を更新。ロールバックは @kubohiroya/turbowarp-svg-text@0.15.0 へ固定。
+
 ## 0.15.0 - 2026-11-16
 
 - 拡張機能の `getLayoutCapability()` に `layoutRichText()` を追加。名前付きスタイルで、ルビを含む content run をレイアウトする。検証は composition の `layoutRichText()` と同じ。TurboWarp Bubble の SVG overlay が、単独で読み込まれた SVG Text でもルビ付きの吹き出しを描けるようにするため。
